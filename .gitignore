@@ -1,0 +1,7 @@
+*.img
+*.TNX
+*.elf
+*.o
+*.fd
+.vs/
+.vscode/
