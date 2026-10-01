@@ -1,0 +1,46 @@
+# 把每个 tag 变成一条正式的 GitHub Release。
+#
+# 为什么需要它：tag 本身已经能下载源码归档
+# （https://github.com/<owner>/<repo>/archive/refs/tags/<tag>.tar.gz），
+# 所以源码从来不会丢。但那个入口很隐蔽，而且没有说明。
+# Release 把它变成一个有名有姓、有发布说明、带 Source code (zip/tar.gz) 的条目。
+#
+# 触发方式：推一个 tag 就自动跑。
+# **不需要任何本地凭据** —— workflow 用的是 GitHub 自己发的 GITHUB_TOKEN。
+#
+# 前置设置（仓库 Settings -> Actions -> General -> Workflow permissions）：
+# 选 "Read and write permissions"，否则创建 Release 会 403。
+name: Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # --generate-notes 需要读完整历史
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          tag="$GITHUB_REF_NAME"
+          echo "tag = $tag"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "release '$tag' already exists, nothing to do"
+            exit 0
+          fi
+          gh release create "$tag" \
+            --title "$tag" \
+            --generate-notes \
+            --verify-tag
+          echo "created release '$tag'"
