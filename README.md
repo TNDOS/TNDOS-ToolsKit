@@ -37,7 +37,7 @@ TNDDOS 的**宿主机工具**。这些东西跑在你的开发机上，不跑在
 ```
 
 ```
-  [tnx] HELLO.TNX   3 sections (CODE+RODT+DATA),  image 1760 bytes ` 0x1000000,  entry +0x0,  file 1840 bytes
+  [tnx] HELLO.TNX   3 sections (CODE+RODT+DATA),  image 1760 bytes @ 0x1000000,  entry +0x0,  file 1840 bytes
 ```
 
 它只做一件事：读 ELF64 的 `PT_LOAD` 程序头，写 TNX 的段表加段数据。
